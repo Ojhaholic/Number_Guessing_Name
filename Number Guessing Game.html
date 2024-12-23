@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+        }
+
+        .cont {
+            background-color: #212121;
+            height: 100vh;
+            width: 100%;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #3d3d3d;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border-radius: 7px;
+        }
+
+        .top,
+        .down {
+            background-color: #212121;
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .top {
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+        }
+
+        .down {
+            border-bottom-left-radius: 7px;
+            border-bottom-right-radius: 7px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        form input {
+            padding: 0.2rem;
+            font-size: 20px;
+            text-align: center;
+            width: 100px;
+        }
+
+
+        form button {
+            background-color: #3d3d3d;
+            color: #ffffff;
+            width: 150px;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 0.2rem;
+            font-size: 16px;
+        }
+
+        form input::placeholder {
+            font-size: 16px;
+        }
+
+        .counter {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .line {
+            display: flex;
+        }
+
+        .result {
+            width: 100px;
+            font-size: 16px;
+            background-color: #e8f88e;
+            color: #212121;
+        }
+        .foot{
+            background-color: #3d3d3d;
+            color: #ffffff;
+            padding: 0.2rem;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            text-align: center;
+            font-size: 10px;
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cont">
+
+        <div class="card">
+            <div class="top">Number Guessing Game</div>
+            <div class="down">
+                <div class="rule">Try and guess a random number between 1 and 15. <br>You have 10 attempts to guess the
+                    right number</div>
+                <br><br>
+                <h1>Enter the number</h1>
+                <br>
+
+                <form>
+                    <input type="text" id="guess" placeholder="type here...">
+                    <button id="submit">Submit Guess</button>
+
+                    <div class="result">result</div>
+
+                    <div class="counter">
+                        <div class="line">
+                            <p>Previous Guesses - &nbsp;</p>
+                            <div class="c1"></div>
+                        </div>
+                        <div class="line">
+                            <p>Attempts Remaining - &nbsp; </p>
+                            <div class="c2">10</div>
+                        </div>
+                        <div class="startover"></div>
+                    </div>
+
+                </form>
+
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <div class="foot">developed by Devansh Ojha</div>
+</body>
+
+<script>
+
+    const randomNumber = Math.floor(Math.random() * (14) + 1)
+    const submit = document.querySelector("#submit")
+    const userInput = document.querySelector("#guess")
+    const guessSlot = document.querySelector(".c1")
+    const remaining = document.querySelector(".c2")
+    const result = document.querySelector(".result")
+
+
+    let prevGuess = []
+    let numGuess = 1
+    let playgame = true
+
+
+    if (playgame) {
+        submit.addEventListener("click", (e) => {
+            e.preventDefault()
+            const guess = parseInt(userInput.value)
+            validateGuess(guess)
+        })
+    }
+
+
+
+    function validateGuess(guess) {
+        //if the user input is valid or not
+        if (isNaN(guess)) {
+            alert("please enter a valid number !")
+        } else if (guess < 1) {
+            alert("please enter a value greater than 1")
+        } else if (guess > 15) {
+            alert("please enter a value less than 16")
+        } else {
+            prevGuess.push(guess)
+            if (numGuess === 11) {
+                displayGuess(guess)
+                alert(`Game Over ! Random number was: ${randomNumber}`)
+                endgame()
+            } else {
+                displayGuess(guess)
+                checkGuess(guess)
+            }
+        }
+    }
+
+    function checkGuess(guess) {
+        //result of game
+        if (guess === randomNumber) {
+            displayMessage(`Correct Guess`)
+            result.style.backgroundColor = "green"
+            result.style.color = "white"
+            endgame()
+        }
+        else if (guess < randomNumber) {
+            displayMessage("Too low")
+        }
+        else if (guess > randomNumber) {
+            displayMessage("Too high")
+        }
+    }
+
+    function displayGuess(guess) {
+        //to interact with guessSlot and previous guesses
+        userInput.value = " "
+        guessSlot.innerHTML += `${guess}  `
+        numGuess++
+        remaining.innerHTML = `${11 - numGuess}`
+    }
+
+    function displayMessage(message) {
+        //interaction with DOM
+        result.innerHTML = message
+    }
+
+    function endgame() {
+        userInput.value = " "
+        userInput.setAttribute("disabled", " ")
+        submit.setAttribute("disabled", " ")
+
+        const button = document.createElement("button")
+        button.style.color = "white"
+        button.style.backgroundColor = "black"
+        button.innerHTML = "Start New Game"
+
+        const startover = document.querySelector(".startover")
+        startover.appendChild(button)
+    }
+
+</script>
+
+</html>
